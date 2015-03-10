@@ -30,8 +30,7 @@ public class SimpleList1Activity extends Activity {
         arrayList.add("데이터8");
         arrayList.add("데이터9");
 
-        ArrayAdapter<String> simpleAdapter;
-        simpleAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, arrayList);
-        listView.setAdapter(simpleAdapter);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayList);
+        listView.setAdapter(arrayAdapter);
     }
 }
