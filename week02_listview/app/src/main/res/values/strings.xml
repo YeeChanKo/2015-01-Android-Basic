@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">week02_listview</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_simplist1">simplist1Activity</string>
+    <string name="title_activity_simplelist2">simplelist2Activity</string>
+    <string name="title_activity_custom_list">CustomListActivity</string>
+</resources>
