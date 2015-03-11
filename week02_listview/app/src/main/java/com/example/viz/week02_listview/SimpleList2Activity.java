@@ -9,7 +9,7 @@ import android.widget.SimpleAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
+ㅁ
 
 public class SimpleList2Activity extends Activity {
 
@@ -23,8 +23,8 @@ public class SimpleList2Activity extends Activity {
 
         for (int i = 1; i < 10; i++) {
             HashMap<String, String> map = new HashMap<String, String>();
-            map.put("line1", "첫번째 줄의" + i + "번");
-            map.put("line2", "두번째 줄의" + i + "번");
+            map.put("line1", "첫번째 줄의 " + i + "번");
+            map.put("line2", "두번째 줄의 " + i + "번");
             hashMapList.add(map);
         }
         String[] from = {"line1", "line2"};
