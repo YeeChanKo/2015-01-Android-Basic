@@ -8,7 +8,7 @@
         android:layout_height="50dp"
         android:text="Write"
         android:textAllCaps="false"
-        android:id="@+id/write_button" />
+        android:id="@+id/write_upload_button" />
 
     <EditText
         android:layout_width="match_parent"
@@ -19,7 +19,7 @@
     <ImageButton
         android:layout_width="match_parent"
         android:layout_height="180dp"
-        android:id="@+id/write_image" />
+        android:id="@+id/write_image_button" />
 
     <EditText
         android:layout_width="match_parent"

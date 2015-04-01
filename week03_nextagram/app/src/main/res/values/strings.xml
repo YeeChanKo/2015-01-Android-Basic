@@ -6,4 +6,5 @@
     <string name="button1_text">Write</string>
     <string name="title_activity_write">WriteActivity</string>
     <string name="title_activity_viewer">ViewerActivity</string>
+    <string name="server_ip">http://192.168.56.1:7646</string>
 </resources>

@@ -2,6 +2,8 @@ package com.example.viz.nextagram;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,20 +12,21 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-public class CustomAdapter extends ArrayAdapter<ListData> {
+public class CustomAdapter extends ArrayAdapter<Article> {
     private Context context;
     private int layoutResourceId;
-    private ArrayList<ListData> listData;
+    private ArrayList<Article> articleData;
 
-    public CustomAdapter(Context context, int layoutResourceId, ArrayList<ListData> listData) {
-        super(context, layoutResourceId, listData);
+    public CustomAdapter(Context context, int layoutResourceId, ArrayList<Article> articleData) {
+        super(context, layoutResourceId, articleData);
         this.context = context;
         this.layoutResourceId = layoutResourceId;
-        this.listData = listData;
+        this.articleData = articleData;
     }
 
     @Override
@@ -37,20 +40,31 @@ public class CustomAdapter extends ArrayAdapter<ListData> {
         }
 
         // 해당 row의 텍스트들 넣어주기
-        TextView textView1 = (TextView) row.findViewById(R.id.customlist_textview1);
-        TextView textView2 = (TextView) row.findViewById(R.id.customlist_textview2);
-        textView1.setText(listData.get(position).getText1());
-        textView2.setText(listData.get(position).getText2());
+        TextView tvTitle = (TextView) row.findViewById(R.id.customlist_textview1);
+        TextView tvContent = (TextView) row.findViewById(R.id.customlist_textview2);
+        tvTitle.setText(articleData.get(position).getTitle());
+        tvContent.setText(articleData.get(position).getContent());
 
         // 해당 row의 이미지 넣어주기
         ImageView imageView = (ImageView) row.findViewById(R.id.customlist_imageview);
-        try {
-            InputStream is = context.getAssets().open(listData.get(position).getImgName());
-            Drawable d = Drawable.createFromStream(is, null);
-            imageView.setImageDrawable(d);
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        String imgPath = context.getFilesDir().getPath() + "/" + articleData.get(position).getImgName();
+        File imgLoadPath = new File(imgPath);
+
+        if (imgLoadPath.exists()) {
+            Bitmap bitmap = BitmapFactory.decodeFile(imgPath);
+            imageView.setImageBitmap(bitmap);
         }
+
+        // TODO: 없을 때 else 처리해줘야 함
+
+//        try {
+//            InputStream is = context.getAssets().open(articleData.get(position).getImgName());
+//            Drawable d = Drawable.createFromStream(is, null);
+//            imageView.setImageDrawable(d);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         return row;
     }
