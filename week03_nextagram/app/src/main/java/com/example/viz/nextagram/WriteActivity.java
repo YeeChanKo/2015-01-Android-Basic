@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
@@ -29,13 +28,14 @@ import java.util.Locale;
 
 public class WriteActivity extends Activity implements View.OnClickListener {
 
+    private static final int REQUEST_PHOTO_ALBUM = 1;
     private EditText etWriter;
     private EditText etTitle;
     private EditText etContent;
     private ImageButton ibPhoto;
-    private Button buUpload;
-
-    private static final int REQUEST_PHOTO_ALBUM = 1;
+    private ProgressDialog progressDialog;
+    private String filePath;
+    private String fileName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,29 +46,28 @@ public class WriteActivity extends Activity implements View.OnClickListener {
         etTitle = (EditText) findViewById(R.id.write_title);
         etContent = (EditText) findViewById(R.id.write_content);
         ibPhoto = (ImageButton) findViewById(R.id.write_image_button);
-        buUpload = (Button) findViewById(R.id.write_upload_button);
+        Button buUpload = (Button) findViewById(R.id.write_upload_button);
 
         ibPhoto.setOnClickListener(this);
         buUpload.setOnClickListener(this);
     }
 
-    private ProgressDialog progressDialog;
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.write_image_button:
-                Log.e("clicked","ok");
+                Log.e("button clicked", "ok");
 
                 Intent intent = new Intent(Intent.ACTION_PICK);
 
                 intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
                 intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, REQUEST_PHOTO_ALBUM); // TODO: 두번째 인자 무슨 의미지?
+                startActivityForResult(intent, REQUEST_PHOTO_ALBUM); // 두번째 인자 - Request Code
 
                 break;
+
             case R.id.write_upload_button:
-                final Handler handler = new Handler();
+
                 progressDialog = ProgressDialog.show(WriteActivity.this, "", "업로드중입니다...");
 
                 String ID = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -107,9 +106,6 @@ public class WriteActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    private String filePath;
-    private String fileName;
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -121,25 +117,31 @@ public class WriteActivity extends Activity implements View.OnClickListener {
                 fileName = uri.getLastPathSegment();
 
                 Bitmap bitmap = BitmapFactory.decodeFile(filePath);
-                Log.e("aaa",filePath);
+                Log.e("image original path: ", filePath);
                 ibPhoto.setImageBitmap(bitmap);
             }
         } catch (Exception e) {
             Log.e("getImageFromLocal", "fail: " + e);
             // 사용자가 사진을 선택하다가 취소하면 null값 리턴될 수 있기 때문에 try catch 해줌
             // 너무 큰 사진파일의 경우 OutOfMemory 발생할 수 있으므로 작은 사진 파일을 업로드해주자
-
         }
     }
 
+    // 다른 application에서 이미지를 선택하면 intent를 넘겨주고
+    // intent.getData()하면 Content URI를 받아온다
+    // 실제 주소가 아닌 Content Provider를 통하는 주소이기 때문에
+    // 파일 업로드를 위해 실제 주소로 바꿔줘야 한다
+    // ContentResolver를 사용해 이 일을 처리!
     private Uri getRealPathUri(Uri uri) {
+        Log.e("content provider uri", uri.toString());
         Uri filePathUri = uri;
-        if (uri.getScheme().toString().compareTo("content") == 0) {
+        if (uri.getScheme().compareTo("content") == 0) {
             Cursor cursor = getApplicationContext().getContentResolver().query(uri, null, null, null, null);
             if (cursor.moveToFirst()) {
                 int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                 filePathUri = Uri.parse(cursor.getString(column_index));
             }
+            cursor.close();
         }
         return filePathUri;
     }

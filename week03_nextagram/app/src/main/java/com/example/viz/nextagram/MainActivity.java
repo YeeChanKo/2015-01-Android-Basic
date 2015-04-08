@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends Activity implements AdapterView.OnItemClickListener, OnClickListener {
 
+    private static AsyncHttpClient client = new AsyncHttpClient();
     private Button button1;
     private Button button2;
     private ArrayList<Article> articleList;
@@ -44,8 +45,6 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
         // db로부터 게시판 글을 가져와서 리스트에 넣는 부분
         listView(); // refreshData()에서 서버에서 json과 이미지 파일 가져오는 작업이 비동기기 때문에 이게 먼저 실행되기 때문에 처음 화면에 화면에 아무것도 안 보임
     }
-
-    private static AsyncHttpClient client = new AsyncHttpClient();
 
     private void refreshData() {
         client.get(getString(R.string.server_ip) + "/loadData", new AsyncHttpResponseHandler() {

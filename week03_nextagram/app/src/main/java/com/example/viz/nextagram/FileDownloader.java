@@ -22,6 +22,8 @@ public class FileDownloader {
     }
 
     public void downFile(String fileUrl, String fileName) {
+        // 서버에 올린 다음 internal storage (/data/data/appname/files/)로 사진을 내려받고 있음
+        // 실제로 이미지를 불러 올 때는 여기서 읽어드린다 - 그래서 db에 이미지 이름만 있어도 불러옴 - 지정된 위치
         final File filePath = new File(context.getFilesDir().getPath() + "/" + fileName);
 
         Log.i("isFileExists", filePath.exists() + " " + filePath.getAbsolutePath());
