@@ -16,12 +16,12 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-public class CustomAdapter extends ArrayAdapter<Article> {
+public class HomeViewAdapter extends ArrayAdapter<ArticleDTO> {
     private Context context;
     private int layoutResourceId;
-    private ArrayList<Article> articleData;
+    private ArrayList<ArticleDTO> articleData;
 
-    public CustomAdapter(Context context, int layoutResourceId, ArrayList<Article> articleData) {
+    public HomeViewAdapter(Context context, int layoutResourceId, ArrayList<ArticleDTO> articleData) {
         super(context, layoutResourceId, articleData);
         this.context = context;
         this.layoutResourceId = layoutResourceId;
@@ -29,8 +29,7 @@ public class CustomAdapter extends ArrayAdapter<Article> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View row = convertView;
+    public View getView(int position, View row, ViewGroup parent) {
 
         // 해당 row의 레이아웃 그려주기
         if (row == null) {

@@ -1,6 +1,7 @@
 package com.example.viz.nextagram;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -14,11 +15,13 @@ import java.util.ArrayList;
 /**
  * Created by viz on 2015. 3. 16..
  */
-public class Dao {
+public class DAO {
     private Context context;
     private SQLiteDatabase database;
+    private SharedPreferences pref;
+    private String serverIP;
 
-    public Dao(Context context) {
+    public DAO(Context context) {
         this.context = context;
 
         database = context.openOrCreateDatabase("LocalDATA.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
@@ -37,10 +40,14 @@ public class Dao {
             Log.e("test", "CREATE TABLE FAILED! - " + e);
             e.printStackTrace();
         }
+
+        pref = context.getSharedPreferences(context.getString(R.string.pref_name), context.MODE_PRIVATE);
+        serverIP = pref.getString(context.getString(R.string.server_ip), "");
     }
 
+    // 서버에서 받아온 JSON 데이터 DB에 넣어주고 해당되는 이미지 파일 다운 받음
     public void insertJsonData(String jsonData) {
-        int articleNumber;
+        int articleNumber = 0; // 별 의미는 없음... 초기화 경고 떠서
         String title;
         String writer;
         String id;
@@ -53,7 +60,6 @@ public class Dao {
         try {
             JSONArray jArr = new JSONArray(jsonData);
 
-            //???
             for (int i = 0; i < jArr.length(); ++i) {
                 JSONObject jObj = jArr.getJSONObject(i);
 
@@ -77,7 +83,16 @@ public class Dao {
                     Log.i("insertJSonData: ", "fail");
                     e.printStackTrace();
                 }
-                fileDownloader.downFile(context.getString(R.string.server_ip) + "/image/" + imgName, imgName); // 확장자 써줘야 하는거 아닌가?
+                fileDownloader.downFile(serverIP + "/image/" + imgName, imgName); // 확장자 써줘야 하는거 아닌가?
+
+                // for 루프 끝나고 나면 articleNumber에 가장 마지막 데이터의 번호가 저장되긴 하는데...
+                // 새로운 데이터가 없을 경우에도 insertJson()이 실행되고 아무것도 없었을 경우엔 for 루프를 아예 안돌기 때문에
+                // for 루프 안에다가 만들어놓는게 더 편한 것 같다 - 뭔가 proxy에서 실제 응답값 있는지 없는지 체크해주기가 어려움
+                if(i == jArr.length() - 1){
+                    SharedPreferences.Editor editor = pref.edit();
+                    editor.putInt(context.getString(R.string.last_update_article_number_key), articleNumber);
+                    editor.apply();
+                }
             }
 
         } catch (JSONException e) {
@@ -86,9 +101,9 @@ public class Dao {
         }
     }
 
-    public ArrayList<Article> getArticleList() {
+    public ArrayList<ArticleDTO> getArticleList() {
 
-        ArrayList<Article> articleList = new ArrayList<Article>();
+        ArrayList<ArticleDTO> articleList = new ArrayList<ArticleDTO>();
 
         int articleNumber;
         String title;
@@ -110,7 +125,7 @@ public class Dao {
             writeDate = cursor.getString(6);
             imgName = cursor.getString(7);
 
-            Article article = new Article(articleNumber, title, writer, id, content, writeDate, imgName);
+            ArticleDTO article = new ArticleDTO(articleNumber, title, writer, id, content, writeDate, imgName);
             articleList.add(article);
         }
 
@@ -119,8 +134,8 @@ public class Dao {
         return articleList;
     }
 
-    public Article getArticleByArticleNumber(int articleNumber) {
-        Article article = null;
+    public ArticleDTO getArticleByArticleNumber(int articleNumber) {
+        ArticleDTO article = null;
 
         String title;
         String writer;
@@ -141,7 +156,7 @@ public class Dao {
         writeDate = cursor.getString(6);
         imgName = cursor.getString(7);
 
-        article = new Article(articleNumber, title, writer, id, content, writeDate, imgName);
+        article = new ArticleDTO(articleNumber, title, writer, id, content, writeDate, imgName);
 
         cursor.close();
         return article;

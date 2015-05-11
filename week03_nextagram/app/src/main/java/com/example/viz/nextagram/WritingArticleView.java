@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.Locale;
 
 
-public class WriteActivity extends Activity implements View.OnClickListener {
+public class WritingArticleView extends Activity implements View.OnClickListener {
 
     private static final int REQUEST_PHOTO_ALBUM = 1;
     private EditText etWriter;
@@ -68,12 +68,12 @@ public class WriteActivity extends Activity implements View.OnClickListener {
 
             case R.id.write_upload_button:
 
-                progressDialog = ProgressDialog.show(WriteActivity.this, "", "업로드중입니다...");
+                progressDialog = ProgressDialog.show(WritingArticleView.this, "", "업로드중입니다...");
 
                 String ID = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
                 String DATE = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.KOREA).format(new Date());
 
-                Article article = new Article(
+                ArticleDTO article = new ArticleDTO(
                         0, // 게시글 번호, 서버에서 붙여주는 번호이므로 숫자는 중요하지 않음
                         etTitle.getText().toString(),
                         etWriter.getText().toString(),
@@ -82,7 +82,8 @@ public class WriteActivity extends Activity implements View.OnClickListener {
                         DATE,
                         fileName);
 
-                ProxyUp.uploadArticle(article, filePath,
+                WritingArticleProxy writingArticleProxy = new WritingArticleProxy(this);
+                writingArticleProxy.uploadArticle(article, filePath,
                         new AsyncHttpResponseHandler() {
                             @Override
                             public void onSuccess(int i, Header[] headers, byte[] bytes) {

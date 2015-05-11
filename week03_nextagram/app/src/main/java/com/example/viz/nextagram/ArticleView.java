@@ -13,7 +13,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 
 
-public class ViewerActivity extends Activity {
+public class ArticleView extends Activity {
 
     private ImageView ivImage;
     private WeakReference<ImageView> imageViewReference;
@@ -31,10 +31,10 @@ public class ViewerActivity extends Activity {
         ivImage = (ImageView) findViewById(R.id.viewer_image_view);
         imageViewReference = new WeakReference<ImageView>(ivImage);
 
-        String articleNumber = getIntent().getExtras().getString("ArticleNumber");
+        int articleNumber = getIntent().getExtras().getInt("ArticleNumber");
 
-        Dao dao = new Dao(getApplicationContext());
-        Article article = dao.getArticleByArticleNumber(Integer.parseInt(articleNumber));
+        DAO dao = new DAO(getApplicationContext());
+        ArticleDTO article = dao.getArticleByArticleNumber(articleNumber);
 
         tvTitle.setText(article.getTitle());
         tvWriter.setText(article.getWriter());

@@ -3,7 +3,7 @@ package com.example.viz.nextagram;
 /**
  * Created by viz on 2015. 3. 18..
  */
-public class Article {
+public class ArticleDTO {
 
     private int articleNumber;
     private String title;
@@ -13,7 +13,7 @@ public class Article {
     private String writeDate;
     private String imgName;
 
-    public Article(int articleNumber, String title, String writer, String id, String content, String writeDate, String imgName) {
+    public ArticleDTO(int articleNumber, String title, String writer, String id, String content, String writeDate, String imgName) {
         this.articleNumber = articleNumber;
         this.title = title;
         this.writer = writer;
