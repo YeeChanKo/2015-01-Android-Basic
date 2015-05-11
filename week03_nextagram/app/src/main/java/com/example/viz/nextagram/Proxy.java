@@ -31,26 +31,6 @@ public class Proxy {
         serverIP = pref.getString(context.getString(R.string.server_ip), "");
     }
 
-//    // json 데이터 서버에서 받아와서 db에 넣어줌
-//    public void getJSON() {
-//        int articleNumber = pref.getInt(context.getString(R.string.last_update_article_number_key), 0);
-//        Log.e("test1", "" + articleNumber);
-//        client.get(serverIP + "/loadData?ArticleNumber=" + articleNumber, new AsyncHttpResponseHandler() {
-//            @Override
-//            public void onSuccess(int i, Header[] headers, byte[] bytes) {
-//                String jsonData = new String(bytes);
-//                Log.e("getJSonData", "success: " + jsonData);
-//                DAO dao = new DAO(context);
-//                dao.insertJsonData(jsonData);
-//            }
-//
-//            @Override
-//            public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-//                Log.e("getJSonData: ", "fail: " + throwable.getMessage());
-//            }
-//        });
-//    }
-
     // 허니콤 이후로 메인쓰레드에서 네트워크 작업하면 오류 난다
     // 별도 쓰레드 만들어서 작업 처리해줘야 함
     public String getJSON() {

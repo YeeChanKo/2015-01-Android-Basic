@@ -46,7 +46,7 @@ public class DAO {
     }
 
     // 서버에서 받아온 JSON 데이터 DB에 넣어주고 해당되는 이미지 파일 다운 받음
-    public void insertJsonData(String jsonData) {
+    public void insertJsonData(JSONArray jsonArray) {
         int articleNumber = 0; // 별 의미는 없음... 초기화 경고 떠서
         String title;
         String writer;
@@ -55,13 +55,10 @@ public class DAO {
         String writeDate;
         String imgName;
 
-        FileDownloader fileDownloader = new FileDownloader(context);
-
         try {
-            JSONArray jArr = new JSONArray(jsonData);
 
-            for (int i = 0; i < jArr.length(); ++i) {
-                JSONObject jObj = jArr.getJSONObject(i);
+            for (int i = 0; i < jsonArray.length(); ++i) {
+                JSONObject jObj = jsonArray.getJSONObject(i);
 
                 articleNumber = jObj.getInt("ArticleNumber");
                 title = jObj.getString("Title");
@@ -83,17 +80,14 @@ public class DAO {
                     Log.i("insertJSonData: ", "fail");
                     e.printStackTrace();
                 }
-                fileDownloader.downFile(serverIP + "/image/" + imgName, imgName); // 확장자 써줘야 하는거 아닌가?
-
-                // for 루프 끝나고 나면 articleNumber에 가장 마지막 데이터의 번호가 저장되긴 하는데...
-                // 새로운 데이터가 없을 경우에도 insertJson()이 실행되고 아무것도 없었을 경우엔 for 루프를 아예 안돌기 때문에
-                // for 루프 안에다가 만들어놓는게 더 편한 것 같다 - 뭔가 proxy에서 실제 응답값 있는지 없는지 체크해주기가 어려움
-                if(i == jArr.length() - 1){
-                    SharedPreferences.Editor editor = pref.edit();
-                    editor.putInt(context.getString(R.string.last_update_article_number_key), articleNumber);
-                    editor.apply();
-                }
+                FileDownloader.downFile(context, serverIP + "/image/" + imgName, imgName); // 확장자 써줘야 하는거 아닌가?
             }
+
+            // for 루프 끝나고 나면 articleNumber에 가장 마지막 데이터의 번호가 저장된다
+            // 받아온 새로운 데이터가 있을 때만 insertJsonData 실행됨
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putInt(context.getString(R.string.last_update_article_number_key), articleNumber);
+            editor.apply();
 
         } catch (JSONException e) {
             Log.e("test", "JSON ERROR! - " + e);
