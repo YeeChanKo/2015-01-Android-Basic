@@ -51,10 +51,10 @@ public class HomeViewAdapter extends ArrayAdapter<ArticleDTO> {
 
         Bitmap bitmap = ImageLoader.getInstance().get(imgPath);
         if (bitmap != null) {
-            Log.e("result", "getCache");
+            Log.i("ImageLoader", "getCache");
             imageViewReference.get().setImageBitmap(bitmap);
         } else {
-            Log.e("result", "putCache");
+            Log.i("ImageLoader", "putCache");
             File imgLoadPath = new File(imgPath);
 
             if (imgLoadPath.exists()) {
@@ -68,7 +68,7 @@ public class HomeViewAdapter extends ArrayAdapter<ArticleDTO> {
                 // Bitmap resized = Bitmap.createScaledBitmap(bitmap, 1000, 1000, true);
                 imageViewReference.get().setImageBitmap(bitmap);
             } else {
-                Log.e("viewImage", "fail: file not found");
+                Log.e("HomeViewAdapter getView", "file does not exist!");
             }
         }
 

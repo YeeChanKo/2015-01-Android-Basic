@@ -54,6 +54,8 @@ public class SyncDataService extends Service {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+                // 요청이 200대가 아니거나, 200대여도 보내줄 내용 없을 경우 -> 여기서 처리하고 있음
                 if (jsonArray == null || jsonArray.length() == 0) {
                     Log.i(TAG, "nothing to update!");
                 } else {

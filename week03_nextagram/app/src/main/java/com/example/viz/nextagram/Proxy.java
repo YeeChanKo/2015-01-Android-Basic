@@ -74,6 +74,5 @@ public class Proxy {
         }
 
         return null;
-        //TODO: responsecode가 200대 아닐 경우, 200대지만 빈값이 온 경우 어떻게 처리할까?
     }
 }
