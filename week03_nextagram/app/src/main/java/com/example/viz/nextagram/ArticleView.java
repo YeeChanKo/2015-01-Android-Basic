@@ -33,11 +33,11 @@ public class ArticleView extends Activity {
 
         int articleNumber = getIntent().getExtras().getInt("ArticleNumber");
 
-        DAO dao = new DAO(getApplicationContext());
+        ProviderDao dao = new ProviderDao(getApplicationContext());
         ArticleDTO article = dao.getArticleByArticleNumber(articleNumber);
 
         tvTitle.setText(article.getTitle());
-        tvWriter.setText(article.getWriter());
+        tvWriter.setText(article.getWriterName());
         tvContent.setText(article.getContent());
         tvWriteTime.setText(article.getWriteDate());
 
@@ -83,14 +83,6 @@ public class ArticleView extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_viewer, menu);
-        return true;
     }
 
     // bitmap recycle을 활용

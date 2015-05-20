@@ -70,6 +70,7 @@ public class WritingArticleView extends Activity implements View.OnClickListener
 
                 progressDialog = ProgressDialog.show(WritingArticleView.this, "", "업로드중입니다...");
 
+                // WriterId 값엔 안드로이드 device id 정보 들어감
                 String ID = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
                 String DATE = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.KOREA).format(new Date());
 

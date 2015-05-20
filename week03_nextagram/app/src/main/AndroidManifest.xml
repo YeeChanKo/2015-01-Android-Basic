@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -41,6 +43,16 @@
             <!--android:exported="false" 다른 app이 사용할 수 있는지 여부, intent-filter 있으면 default가 true-->
             <!--5.0부터 보안 문제 때문에 service는 명시적 인텐트만 사용가능-->
         </service>
+
+        <provider
+            android:authorities="com.example.nextagram.provider"
+            android:name=".NextagramProvider"
+            android:enabled="true"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:readPermission="com.example.nextagram.provider.READ"
+            android:writePermission="com.example.nextagram.provider.WRITE" />
+
     </application>
 
 </manifest>

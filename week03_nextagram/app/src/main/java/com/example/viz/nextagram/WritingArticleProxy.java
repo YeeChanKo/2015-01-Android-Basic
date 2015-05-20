@@ -27,8 +27,8 @@ public class WritingArticleProxy {
     public void uploadArticle(ArticleDTO article, String filePath, AsyncHttpResponseHandler responseHandler) {
         RequestParams params = new RequestParams();
         params.put("title", article.getTitle());
-        params.put("writer", article.getWriter());
-        params.put("id", article.getId());
+        params.put("writerName", article.getWriterName());
+        params.put("writerId", article.getWriterId());
         params.put("content", article.getContent());
         params.put("writeDate", article.getWriteDate());
         params.put("imgName", article.getImgName());

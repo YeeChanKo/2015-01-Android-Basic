@@ -7,17 +7,17 @@ public class ArticleDTO {
 
     private int articleNumber;
     private String title;
-    private String writer;
-    private String id;
+    private String writerName;
+    private String writerId;
     private String content;
     private String writeDate;
     private String imgName;
 
-    public ArticleDTO(int articleNumber, String title, String writer, String id, String content, String writeDate, String imgName) {
+    public ArticleDTO(int articleNumber, String title, String writerName, String writerId, String content, String writeDate, String imgName) {
         this.articleNumber = articleNumber;
         this.title = title;
-        this.writer = writer;
-        this.id = id;
+        this.writerName = writerName;
+        this.writerId = writerId;
         this.content = content;
         this.writeDate = writeDate;
         this.imgName = imgName;
@@ -31,12 +31,12 @@ public class ArticleDTO {
         return title;
     }
 
-    public String getWriter() {
-        return writer;
+    public String getWriterName() {
+        return writerName;
     }
 
-    public String getId() {
-        return id;
+    public String getWriterId() {
+        return writerId;
     }
 
     public String getContent() {

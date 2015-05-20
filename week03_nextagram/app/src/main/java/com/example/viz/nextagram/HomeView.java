@@ -3,27 +3,23 @@ package com.example.viz.nextagram;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
-import java.util.ArrayList;
+import org.json.JSONArray;
 
 
-public class HomeView extends Activity implements AdapterView.OnItemClickListener, OnClickListener {
+public class HomeView extends Activity implements OnClickListener {
 
     private Button button1;
     private Button button2;
-    private ArrayList<ArticleDTO> articleList;
     private SharedPreferences pref;
-    private static Handler handler; // singleton instance
+    // private static Handler handler; // singleton instance
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,34 +41,34 @@ public class HomeView extends Activity implements AdapterView.OnItemClickListene
         button1.setOnClickListener(this);
         button2.setOnClickListener(this);
 
-        // 핸들러 생성해주고 메시지 처리 어떻게 해야하는지 명시
-        handler = new Handler(Looper.getMainLooper()) {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                Log.e("HomeView", "i got the message!");
-                switch (msg.what) {
-                    case 1:
-                        listView();
-                        break;
-                }
-            }
-        };
+//        // 핸들러 생성해주고 메시지 처리 어떻게 해야하는지 명시
+//        handler = new Handler(Looper.getMainLooper()) {
+//            @Override
+//            public void handleMessage(Message msg) {
+//                super.handleMessage(msg);
+//                Log.e("HomeView", "i got the message!");
+//                switch (msg.what) {
+//                    case 1:
+//                        listView();
+//                        break;
+//                }
+//            }
+//        };
 
         // 핸들러 넣어주고 나서 실행해야 함 - 서비스 onCreate에서 싱글턴 인스턴스 받아와서 초기화해준다
         // 백그라운드 동기화 서비스 실행
+        // 서비스는 보안 문제 때문에 명시적 인텐트만 허용하는 걸로 버전업 되면서부터 변경됨
         Intent intentSync = new Intent(this, SyncDataService.class);
         startService(intentSync);
 
-        // 처음 1회 화면 갱신
-        listView();
+        listView(); // 화면 셋팅
     }
 
-    public static Handler getHandler(){
-        return handler;
-    }
+//    public static Handler getHandler() {
+//        return handler;
+//    }
 
-// legacy code - listview()하니까 화면이 계속 맨 위로 올라감...;; // TODO: 해결방법 찾아볼 것...
+// legacy code - listview()하니까 화면이 계속 맨 위로 올라감...;;
 //    // 주기적으로 뷰 갱신해줌
 //    // 액티비티가 화면에 안 떠있을 때 실행되도 되는건가?
 //    public void periodicRefresh() {
@@ -111,7 +107,7 @@ public class HomeView extends Activity implements AdapterView.OnItemClickListene
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
-//        DAO dao = new DAO(context);
+//        ProviderDao dao = new ProviderDao(context);
 //        // 쓰레드로부터 값이 제대로 들어왔는지 확인
 //        if (jsonData != null)
 //            dao.insertJsonData(jsonData); // 요것도 비동기로 이미지파일 다운로드하는 부분 있기 때문에 메인쓰레드로 빼줘야한다
@@ -120,12 +116,18 @@ public class HomeView extends Activity implements AdapterView.OnItemClickListene
 //    }
 
     public void listView() {
-        DAO dao = new DAO(getApplicationContext());
-        articleList = dao.getArticleList();
-        HomeViewAdapter homeViewAdapter = new HomeViewAdapter(this, R.layout.custom_list_row, articleList);
         ListView listView = (ListView) findViewById(R.id.customlist_listview);
+
+        Cursor cursor = getContentResolver().query(
+                NextagramContract.Article.CONTENT_URI,
+                NextagramContract.Article.PROJECTION_ALL, null, null,
+                NextagramContract.Article.SORT_ORDER_DEFAULT
+        );
+
+        HomeViewAdapter homeViewAdapter = new HomeViewAdapter(this, cursor, R.layout.custom_list_row);
+
         listView.setAdapter(homeViewAdapter);
-        listView.setOnItemClickListener(this);
+        listView.setOnItemClickListener(itemClickListener);
     }
 
     @Override
@@ -136,16 +138,24 @@ public class HomeView extends Activity implements AdapterView.OnItemClickListene
                 startActivity(intentWrite);
                 break;
             case R.id.button2:
-                listView();
+                try {
+                    new ProviderDao(this).insertJsonData(new JSONArray(new Proxy(this).getJSON()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent intentView = new Intent(".ArticleView");
-        int articleNumber = articleList.get(position).getArticleNumber();
-        intentView.putExtra("ArticleNumber", articleNumber);
-        startActivity(intentView);
-    }
+    public AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Intent intent = new Intent(".ArticleView");
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // TODO: 뭘까?
+            intent.putExtra("ArticleNumber",
+                    ((HomeViewAdapter.ViewHolderItem) view.getTag()).articleNumber);
+
+            startActivity(intent);
+        }
+    };
 }
